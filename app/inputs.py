@@ -50,6 +50,12 @@ class Review(BaseModel):
     note: str = Field(default='',max_length=500)
 
 
+class TransferForm(BaseModel):
+    run_id: str | None = Field(default=None,max_length=64)
+    week: str | None = Field(default=None,max_length=8)
+    rows: int = Field(default=1,ge=1,le=10)
+
+
 def read_sample(name):
     choices = {'shift':'shift.csv','external':'external.csv'}
     if name not in choices:

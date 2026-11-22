@@ -13,6 +13,8 @@ let selected = Object.hasOwn(settings.tabs, location.hash.slice(1)) ? location.h
 let result = null;
 let inputs = {};
 let reviewVersion = 0;
+let transferList = null;
+let transferVersion = 0;
 let renderEpoch = 0;
 let activeView = null;
 const filter = byId('filter');
@@ -150,6 +152,25 @@ async function render() {
         return button;
       }]];
       rows = runs;
+    } else if (stage === 'transfer') {
+      const list = await query('/api/transfer', {run_id: id});
+      transferList = list;
+      const kind = row => el('span', row.kind, row.kind === '本周调库' ? 'state' : 'state problem');
+      const basis = row => {
+        const cell = el('span', row.run_id.slice(0, 9));
+        cell.title = row.run_id;
+        return cell;
+      };
+      view = [['占位', 'slot', 'num'], key, ['类别', kind], ['结案年', 'group'], ['最早处置日', 'disposal'],
+              ['依据批次', basis], ['说明', 'detail']];
+      rows = [...list.items.map(item => ({...item, kind: '本周调库', detail: '账差已核清'})),
+              ...list.deferred.map(group => ({kind: '整组待下周', group: group.group, detail: group.reason, run_id: list.run_id})),
+              ...list.excluded.map(item => ({...item, kind: '账差未清', run_id: list.run_id}))];
+      live.textContent = `调库清单 ${list.list_id.slice(0, 9)} · ${list.week} · ${list.status} · 占位 ${list.used}/${list.capacity}`;
+      if (ticket === renderEpoch) {
+        transferVersion = list.reviews[0]?.version || 0;
+        byId('review').hidden = false;
+      }
     } else {
       const timeline = await query(`/api/review/${id}`);
       view = [['版本','version','num'], ['结论','decision'], ['复核意见','note'], ['登记 UTC','changed']];
@@ -231,10 +252,15 @@ byId('source').addEventListener('submit', async event => {
 });
 byId('review').addEventListener('submit', async event => {
   event.preventDefault();
-  const id = result.manifest.run_id;
   const note = byId('review-note');
+  const decision = byId('decision').value;
   try {
-    await query(`/api/review/${id}`, {version: reviewVersion, decision: byId('decision').value, note: note.value});
+    if (selected === 'transfer' && transferList) {
+      await query(`/api/transfer/${transferList.list_id}/review`, {version: transferVersion, decision, note: note.value});
+    } else {
+      const id = result.manifest.run_id;
+      await query(`/api/review/${id}`, {version: reviewVersion, decision, note: note.value});
+    }
     notice('复核已登记');
     note.value = '';
     await render();

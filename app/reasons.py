@@ -9,6 +9,9 @@ REASONS = {
     'AMOUNT_DELTA': '复算与外部账计量不同', 'BOOK_CONFLICT': '独立账含重复业务键',
     'RUN_UNKNOWN': '没有此批次', 'DEMO_UNKNOWN': '没有此样例', 'STALE': '复核版本已过期',
     'REVIEW_NOTE': '有差异时须填写复核意见', 'REVIEW_DECISION': '复核结论无效',
+    'LIST_UNKNOWN': '没有此清单', 'LIST_EXPIRED': '清单已失效，请按最新批次重新形成',
+    'STALE_RUN': '上游处置结果已更新', 'WEEK_OCCUPIED': '本周已有生效清单，不能重复占位',
+    'WEEK_FORMAT': '周须为 YYYY-Www 形式',
 }
 
 REASONS.update({'ARCHIVE_POLICY': '保管版本冲突或缺失', 'ARCHIVE_HOLD': '留置区段无效', 'ARCHIVE_DATES': '日期范围无效', 'DATE': '日期格式无效', 'REV_BLOCKED': '较新来源尚未采信'})

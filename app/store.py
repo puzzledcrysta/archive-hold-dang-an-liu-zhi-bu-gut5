@@ -13,6 +13,19 @@ CREATE TABLE IF NOT EXISTS reviews (
   decision TEXT NOT NULL, note TEXT NOT NULL, changed TEXT NOT NULL,
   PRIMARY KEY(run_id,version)
 );
+CREATE TABLE IF NOT EXISTS transfer_lists (
+  id TEXT PRIMARY KEY, week TEXT NOT NULL,
+  run_id TEXT NOT NULL REFERENCES runs(id), capacity INTEGER NOT NULL,
+  result TEXT NOT NULL, status TEXT NOT NULL,
+  created TEXT NOT NULL, changed TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS transfer_live_week
+  ON transfer_lists(week) WHERE status != '已失效';
+CREATE TABLE IF NOT EXISTS transfer_reviews (
+  list_id TEXT NOT NULL REFERENCES transfer_lists(id), version INTEGER NOT NULL,
+  decision TEXT NOT NULL, note TEXT NOT NULL, changed TEXT NOT NULL,
+  PRIMARY KEY(list_id,version)
+);
 """
 
 

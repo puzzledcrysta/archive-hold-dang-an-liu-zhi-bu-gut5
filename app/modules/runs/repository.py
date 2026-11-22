@@ -1,6 +1,7 @@
 import json
 from app.errors import DataError
 from app.store import connection
+from app.modules.transfer.repository import expire_live
 
 
 def lookup(db,run_id):
@@ -17,8 +18,11 @@ def fetch(run_id):
 
 def persist(run_id,source,book,result,created):
     with connection() as db:
-        db.execute('INSERT OR IGNORE INTO runs VALUES (?,?,?,?,?)',
-                   (run_id,source,book,json.dumps(result,ensure_ascii=False),created))
+        cursor = db.execute('INSERT OR IGNORE INTO runs VALUES (?,?,?,?,?)',
+                            (run_id,source,book,json.dumps(result,ensure_ascii=False),created))
+        if cursor.rowcount:
+            # 上游处置结果更新：所有生效中的调库清单立即失效
+            expire_live(db,created)
         return lookup(db,run_id)
 
 

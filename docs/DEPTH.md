@@ -15,6 +15,7 @@
 | M5 保管台账 | 核对独立清单和各类差异 | `POST /api/reconcile` | `app/modules/reconcile/service.py` | `tests/test_reconcile.py` |
 | M6 留置批次 | 打开历史批次并对原文件复跑 | `POST /api/runs` | `app/modules/runs/service.py` | `tests/test_runs.py` |
 | M7 处置复核 | 登记复核结论并下载证据 | `POST /api/review/{run_id}` | `app/modules/review/decisions.py` | `tests/test_review.py` |
+| M8 调库清单 | 形成本周调库清单并送复核 | `POST /api/transfer` | `app/modules/transfer/service.py` | `tests/test_transfer.py` |
 
 ## 陷阱登记
 
@@ -35,6 +36,10 @@
 | TRAP-26 | 陈旧复核版本拒绝 | 测试构造 | `app/modules/review/decisions.py` | `tests/test_review.py::test_stale` |
 | TRAP-25 | ambiguous policy | cases.csv | `app/modules/domain/rule.py` | `tests/test_domain.py::test_ambiguous_policy` |
 | TRAP-23 | adjacent holds | cases.csv | `app/modules/domain/rule.py` | `tests/test_domain.py::test_adjacent_holds` |
+| TRAP-31 | 账差未清不入清单 | 测试构造 | `app/modules/transfer/service.py` | `tests/test_transfer.py::test_discrepancy_excluded` |
+| TRAP-32 | 同年结案整组装箱 | 测试构造 | `app/modules/transfer/service.py` | `tests/test_transfer.py::test_smaller_group_fills_remaining` |
+| TRAP-33 | 上游更新旧清单失效 | 测试构造 | `app/modules/runs/repository.py` | `tests/test_transfer.py::test_upstream_update_invalidates` |
+| TRAP-34 | 同周重跑重复占位 | 测试构造 | `app/modules/transfer/service.py` | `tests/test_transfer.py::test_idempotent_same_week` |
 
 ## 对账
 
